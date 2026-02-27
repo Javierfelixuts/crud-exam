@@ -5,12 +5,13 @@ import { Employee, Employees, EmployeeService } from '../../../services/employee
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import Swal from 'sweetalert2';
 import { WorkHoursService } from '../../../services/employee/workHour.service';
-import { ActivatedRoute, Route, Router } from '@angular/router';
+import { ActivatedRoute, Route, Router, RouterLink } from '@angular/router';
+
 
 @Component({
   selector: 'app-salary',
   templateUrl: './salary.component.html',
-  imports: [BadgeComponent, CommonModule,FormsModule, ReactiveFormsModule],
+  imports: [BadgeComponent, CommonModule, FormsModule, ReactiveFormsModule, RouterLink],
 })
 export class SalaryComponent {
 
