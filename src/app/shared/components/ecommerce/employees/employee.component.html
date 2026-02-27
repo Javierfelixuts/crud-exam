@@ -1,0 +1,262 @@
+
+
+<div
+  class="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
+  <div class="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+        Empleados
+      </h3>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button
+        (click)="openModal()"
+        class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
+        Agregar
+      </button>
+    </div>
+  </div>
+
+  <div class="max-w-full overflow-x-auto">
+    <table class="w-full text-left">
+      <thead class="border-y border-gray-100 dark:border-gray-800">
+        <tr>
+          <th class="py-3 font-medium text-gray-500 text-theme-xs dark:text-gray-400">Id</th>
+          <th class="py-3 font-medium text-gray-500 text-theme-xs dark:text-gray-400">Nombre</th>
+          <th class="py-3 font-medium text-gray-500 text-theme-xs dark:text-gray-400">RFC</th>
+          <th class="py-3 font-medium text-gray-500 text-theme-xs dark:text-gray-400">Fecha Nacimiento</th>
+          <th class="py-3 font-medium text-gray-500 text-theme-xs dark:text-gray-400">Tipo Empleado</th>
+          <th class="py-3 font-medium text-gray-500 text-theme-xs dark:text-gray-400">Salario/Hora</th>
+          <th class="py-3 font-medium text-gray-500 text-theme-xs dark:text-gray-400">Captura de Horas</th>
+          <th class="py-3 font-medium text-gray-500 text-theme-xs dark:text-gray-400">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+        <div *ngIf="tableData.length == 0"> Aun no hay datos registrados</div>
+        @for (employee of tableData; track $index) {
+        <tr>
+          <td class="py-3">
+            <div class="flex items-center gap-3">
+              <div class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                <span class="text-gray-500 text-theme-xs dark:text-gray-400">
+                  {{ employee.id }}
+                </span>
+              </div>
+              
+            </div>
+          </td>
+          <td class="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+            <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                   {{ employee.name }} {{ employee.lastname }} {{ employee.secondLastname }}
+                </p>
+          </td>
+          <td class="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+            {{ employee.rfc }}
+          </td>
+          <td class="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+            {{ employee.birthday }}
+          </td>
+          <td class="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+            {{ employee.employeeType == 0 ? "Local" : "Externo" }}
+          </td>
+          <td class="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+            <app-badge size="sm" [color]="'success'">
+              {{ employee.salaryPerHour | currency: "$" : "symbol" : "1.2-2" }} 
+            </app-badge>
+          </td>
+          <td class="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+            <app-badge size="sm" class="text-blue-400" >
+              <a [routerLink]="['/salary/', employee.id]" class="d-flex">
+              <div class="flex justify-center items-center">
+              <span>
+              Capturar horas
+              </span>
+              <span><svg fill="currentColor" width="17px" height="17px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g data-name="Layer 2"> <g data-name="diagonal-arrow-right-up"> <rect width="10" height="10" transform="rotate(180 12 12)" opacity="0"></rect> <path d="M18 7.05a1 1 0 0 0-1-1L9 6a1 1 0 0 0 0 2h5.56l-8.27 8.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0L16 9.42V15a1 1 0 0 0 1 1 1 1 0 0 0 1-1z"></path> </g> </g> </g></svg></span>
+              </div>
+                 
+              </a>
+            </app-badge>
+          </td>
+          <td class="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+            <app-badge size="sm" [color]="'success'" >
+              <button (click)="editEmployee(employee)">
+
+                Editar
+              </button>
+            </app-badge>
+          </td>
+          <td class="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+            <app-badge size="sm" [color]="'error'" >
+              <button (click)="deleteEmployee(employee)">
+                Eliminar
+              </button>
+            </app-badge>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+ <app-modal
+    [isOpen]="isOpen"
+    (close)="closeModal()"
+    className="max-w-[700px] p-6 lg:p-10"
+  >
+    <form [formGroup]="employeeForm" class="flex flex-col px-2 overflow-y-auto custom-scrollbar">
+      <div>
+        <h5 class="mb-2 font-semibold text-gray-800 modal-title text-theme-xl dark:text-white/90 lg:text-2xl">
+          <span *ngIf="isEditing">Actualizar</span>
+          <span *ngIf="!isEditing">Agregar</span>
+           Empleado
+        </h5>
+      
+      </div>
+      <div class="mt-8">
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+           Nombre del Empleado
+          </label>
+          <input
+          (input)="validateTrimUpper('name')"
+
+            formControlName="name"
+            id="name"
+            type="text"
+            class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+          />
+           <span *ngFor="let error of employeeForm.get('name')?.errors | keyvalue" class="text-red-500 text-xs">
+            {{ getErrorMessage(error.key, error.value, 'name') }}
+          </span>
+        </div>
+      </div>
+
+      <div class="mt-2">
+        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+          Apellido Paterno
+        </label>
+        <input
+          (input)="validateTrimUpper('lastname')"
+
+          formControlName="lastname"
+            id="lastname"
+            type="text"
+            class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+          />
+          <span *ngFor="let error of employeeForm.get('lastname')?.errors | keyvalue" class="text-red-500 text-xs">
+            {{ getErrorMessage(error.key, error.value, 'lastname') }}
+          </span>
+      </div>
+
+      <div class="mt-2">
+        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+          Apellido Materno
+        </label>
+        <input
+          (input)="validateTrimUpper('secondLastname')"
+
+          formControlName="secondLastname"
+            id="secondLastname"
+            type="text"
+            class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+          />
+          <span *ngFor="let error of employeeForm.get('secondLastname')?.errors | keyvalue" class="text-red-500 text-xs">
+            {{ getErrorMessage(error.key, error.value, 'secondLastname') }}
+          </span>
+          
+      </div>
+
+      
+      <div class="mt-2">
+        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+          RFC
+        </label>
+        <input
+          (input)="validateTrimUpper('rfc')"
+          formControlName="rfc"
+          id="rfc"
+          type="text"
+          class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+        />
+       <div *ngIf="employeeForm.get('rfc')?.errors && employeeForm.get('rfc')?.touched">
+        <span *ngFor="let error of employeeForm.get('rfc')?.errors | keyvalue" class="text-red-500 text-xs">
+          {{ getErrorMessage(error.key, error.value, 'rfc') }}
+        </span>
+       </div>
+      </div>
+      <div class="mt-2">
+        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+          Fecha de Nacimiento
+        </label>
+          <input
+          id="event-start-date"
+          formControlName="birthday"
+          id="birthday"
+          type="date"
+          format="yyyy-mm-dd"
+          class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+          />
+          <div>
+    </div>
+      </div>
+      <div class="mt-2">
+        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+          Tipo Empleado
+        </label>
+        <select formControlName="employeeType" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500">
+        <option *ngFor="let emp of tipoEmpleado" [ngValue]="emp.id" [selected]="emp.id == employeeForm.get('employeeType')?.value">
+          {{ emp.type }}
+        </option>
+      </select>
+        
+      </div>
+      <div class="mt-2">
+        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+          Salario por Hora  
+        </label>
+        <input
+          formControlName="salaryPerHour"
+          placeholder="0"
+          type="number"
+          class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
+        />
+        <span
+          class="text-red-500 text-sm aa"
+          *ngIf="employeeForm.get('salaryPerHour')?.touched && typeof employeeForm.get('salaryPerHour')?.value !== 'number' && employeeForm.get('salaryPerHour')?.value <=0"
+
+        >
+          Este campo debe ser un número entero positivo
+        </span>
+      </div>
+
+      <span class="text-red-500">{{errorMessage}}</span> <!-- quitar o poner en otro lado -->
+      <div class="flex items-center gap-3 mt-6 modal-footer sm:justify-end">
+        <button
+          (click)="closeModal()"
+          type="button"
+          class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 sm:w-auto"
+        >
+          Cancelar
+        </button>
+        <button
+          *ngIf="!isEditing"
+          (click)="createEmployee(employeeForm)"
+          type="button"
+          class="btn btn-success btn-update-event flex w-full justify-center rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 sm:w-auto"
+        >
+          Agregar
+        </button>
+        <button
+          *ngIf="isEditing"
+          (click)="updateEmployee(employeeForm)"
+          type="button"
+          class="btn btn-success btn-update-event flex w-full justify-center rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 sm:w-auto"
+        >
+          Actualizar
+        </button>
+      </div>
+    </form>
+  </app-modal>
